@@ -20,7 +20,7 @@ class GoogleMapPlugin(CMSPluginBase):
     name = _('Google Map')
     admin_preview = False
     allow_children = True
-    child_classes = ['GoogleMapMarkerPlugin', 'GoogleMapRoutePlugin']
+    child_classes = ['GoogleMapMarkerPlugin', 'GoogleMapRoutePlugin','GoogleDBMapMarkerPlugin']
 
     fieldsets = [
         (None, {
@@ -115,7 +115,27 @@ class GoogleMapRoutePlugin(CMSPluginBase):
     def get_render_template(self, context, instance, placeholder):
         return 'djangocms_googlemap/{}/route.html'.format(context['googlemap_template'])
 
+class GoogleDBMapMarkerPlugin(CMSPluginBase):
+    model = models.GoogleDBMapMarker
+    name = _('DBMarker')
+    module = _('Google Map')
+    require_parent = True
+    parent_classes = ['GoogleMapPlugin']
+
+    fieldsets = [
+        (None, {
+            'fields': (
+                'country',
+                'icon',
+            )
+        }),
+    ]
+
+    def get_render_template(self, context, instance, placeholder):
+        return 'djangocms_googlemap/{}/marker_db.html'.format(context['googlemap_template'])
+
 
 plugin_pool.register_plugin(GoogleMapPlugin)
 plugin_pool.register_plugin(GoogleMapMarkerPlugin)
 plugin_pool.register_plugin(GoogleMapRoutePlugin)
+plugin_pool.register_plugin(GoogleDBMapMarkerPlugin)

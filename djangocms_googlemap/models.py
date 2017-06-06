@@ -296,3 +296,90 @@ class GoogleMapRoute(CMSPlugin):
             display += 'from {0}, '.format(self.origin)
         display += 'to {0} '.format(self.destination)
         return display
+
+
+
+class MapMarker(models.Model):
+    # To be published
+    """
+       Renders a marker inside the Google Maps wrapper
+       """
+    title = models.CharField(
+        verbose_name=_('Title'),
+        max_length=255,
+        blank=True,
+    )
+    www = models.URLField(
+        blank=True,
+        null=True,
+    )
+    email = models.EmailField(
+        blank=True,
+        null=True,
+    )
+    address = models.CharField(
+        verbose_name=_('Full address'),
+        max_length=255,
+        blank=True,
+        help_text=_('Note: Latitude and longitude can be used to fine-tune the location.'),
+    )
+    lat = models.DecimalField(
+        verbose_name=_('Latitude (lat)'),
+        max_digits=10,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        help_text=_('Geographical latitude in degrees (e.g. "46.947973").'),
+    )
+    lng = models.DecimalField(
+        verbose_name=_('Longitude (lng)'),
+        max_digits=10,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        help_text=_('Geographical longitude in degrees (e.g. "7.447446").'),
+    )
+
+    info_content = models.TextField(
+        verbose_name=_('Info window content'),
+        blank=True,
+        help_text=_('Will be displayed in the info window attached to the marker.'),
+    )
+
+    def __str__(self):
+        return str(self.pk)
+
+    def get_short_description(self):
+        display = []
+        if self.title:
+            display.append(self.title)
+        if self.address:
+            display.append(self.address)
+        if self.lat and self.lng:
+            display.append('{0} / {1} '.format(self.lat, self.lng))
+        return ', '.join(display)
+
+@python_2_unicode_compatible
+class GoogleDBMapMarker(CMSPlugin):
+    """
+    Renders a marker inside the Google Maps wrapper
+    """
+    country = models.CharField(
+        verbose_name=_('Country'),
+        max_length=255,
+        blank=True,
+    )
+
+    icon = FilerImageField(
+        verbose_name=_('Icon'),
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text=_('A marker icon identifies a location on a map. '
+                    'By default, it uses a standard image from Google.'),
+    )
+
+    def __str__(self):
+        return str(self.pk)
+
+
